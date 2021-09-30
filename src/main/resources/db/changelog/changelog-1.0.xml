@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <changeSet id="create telegram user table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="TELEGRAM_USER"/>
+            </not>
+        </preConditions>
+        <createTable tableName="TELEGRAM_USER">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="USER_ID" type="varchar(255)"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="LOGIN" type="varchar(255)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="TELEGRAM_USER"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create telegram group table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="TELEGRAM_GROUP"/>
+            </not>
+        </preConditions>
+        <createTable tableName="TELEGRAM_GROUP">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="CHAT_ID" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="TELEGRAM_GROUP" columnNames="CHAT_ID, NAME"/>
+        <rollback>
+            <dropTable tableName="TELEGRAM_GROUP"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create telegram group users table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="TELEGRAM_GROUP_USER"/>
+            </not>
+        </preConditions>
+        <createTable tableName="TELEGRAM_GROUP_USER">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="GROUP_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        <addUniqueConstraint tableName="TELEGRAM_GROUP_USER" columnNames="GROUP_ID, USER_ID"/>
+        <addForeignKeyConstraint baseTableName="TELEGRAM_GROUP_USER" baseColumnNames="GROUP_ID"
+                                 constraintName="FK_GROUP_USER_GROUP"
+                                 referencedTableName="TELEGRAM_GROUP"
+                                 referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="TELEGRAM_GROUP_USER" baseColumnNames="USER_ID"
+                                 constraintName="FK_GROUP_USER_USER"
+                                 referencedTableName="TELEGRAM_USER"
+                                 referencedColumnNames="ID"/>
+        <rollback>
+            <dropTable tableName="TELEGRAM_GROUP_USER"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
