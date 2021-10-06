@@ -21,8 +21,8 @@ class UserService(
         groupRepository.findByNameAndChatId(groupName, chatId)?.users?.toList() ?: emptyList()
 
     @Cacheable(value = [CacheConfiguration.TELEGRAM_USER_CACHE], unless = "#result == null")
-    suspend fun findUser(userId: String, userLogin: String?): TelegramUser? {
-        return userRepository.findFirstByUserIdOrLogin(userId, userLogin ?: "")
+    suspend fun findUser(userId: String?, userLogin: String?): TelegramUser? {
+        return userRepository.findFirstByUserIdOrLogin(userId ?: "", userLogin ?: "")
     }
 
     @Transactional
