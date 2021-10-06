@@ -82,15 +82,16 @@ class TelegramBot(
 
     private suspend fun prepareNotification(message: Message): SendMessage? {
         return message.takeIf { it.text?.contains(START_MENTION_SYMBOL) ?: false }?.run {
-            text.split(" ").filter { it.startsWith(START_MENTION_SYMBOL) }.flatMap {
-                userService.findAllUsersByChatIdAndGroupName(message.chatId.toString(), it)
-            }.mapNotNull {
-                if (it.userId != null && it.name != null) {
-                    "[${it.name}](tg://user?id=${it.userId})"
-                } else {
-                    it.login?.run { "@$this" }
-                }
-            }.joinToString(", ").takeIf { it.isNotEmpty() }
+            text.split(" ", "\n").filter { it.startsWith(START_MENTION_SYMBOL) }
+                .map { it.replace(Regex("[^A-Za-z0-9_@\n]"), "") }.flatMap {
+                    userService.findAllUsersByChatIdAndGroupName(message.chatId.toString(), it)
+                }.toSet().mapNotNull {
+                    if (it.userId != null && it.name != null) {
+                        "[${it.name}](tg://user?id=${it.userId})"
+                    } else {
+                        it.login?.run { "@$this" }
+                    }
+                }.joinToString(", ").takeIf { it.isNotEmpty() }
                 ?.let {
                     SendMessage(chatId.toString(), it).apply {
                         parseMode = "MarkdownV2"

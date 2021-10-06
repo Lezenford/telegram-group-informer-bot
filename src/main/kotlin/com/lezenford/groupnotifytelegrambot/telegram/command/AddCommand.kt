@@ -41,7 +41,7 @@ class AddCommand(
 
         usersInfo.forEach { userInfo ->
             val user = userService.findUser(userInfo.id ?: "", userInfo.login ?: "")
-                ?: TelegramUser(userId = userInfo.id.toString(), name = userInfo.name, login = userInfo.login)
+                ?: TelegramUser(userId = userInfo.id, name = userInfo.name, login = userInfo.login)
                     .let { userService.save(it) }
             group.users.add(user)
         }

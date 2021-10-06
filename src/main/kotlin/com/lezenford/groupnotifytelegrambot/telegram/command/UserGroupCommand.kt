@@ -17,15 +17,20 @@ abstract class UserGroupCommand : BotCommand() {
         }
     }
 
-    protected fun getUsersInfo(message: Message): List<UserInfo> = message.entities.mapNotNull {
-        when (it.type) {
-            MENTION -> UserInfo(login = it.text)
-            TEXT_MENTION -> UserInfo(
-                id = it.user.id.toString(),
-                name = it.user.firstName,
-                login = it.user.userName
-            )
-            else -> null
+    protected fun getUsersInfo(message: Message): List<UserInfo> {
+        val groupName = getGroup(message)
+        return message.entities.filterNot {
+            it.type == MENTION && it.text != null && it.text == groupName
+        }.mapNotNull {
+            when (it.type) {
+                MENTION -> UserInfo(login = it.text)
+                TEXT_MENTION -> UserInfo(
+                    id = it.user.id.toString(),
+                    name = it.user.firstName,
+                    login = it.user.userName
+                )
+                else -> null
+            }
         }
     }
 
