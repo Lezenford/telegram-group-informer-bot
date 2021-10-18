@@ -38,8 +38,8 @@ Current version doesn't support self-sign certs for webhook registration
 * clone repository
 * Fill telegram bot params in `src/main/resources/application.yml`
 * Run `.\gradlew bootJar`
-* Copy artifact from `build\libs\group-notify-telegram-bot-0.0.1-SNAPSHOT.jar` to your server
-* Run artifact on the server with Java 11+ `java -jar group-notify-telegram-bot-0.0.1-SNAPSHOT.jar`
+* Copy artifact from `build\libs\group-notify-telegram-bot-0.0.1.jar` to your server
+* Run artifact on the server with Java 11+ `java -jar group-notify-telegram-bot-0.0.1.jar`
 
 You can pack it into docker container
 
