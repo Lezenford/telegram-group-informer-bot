@@ -85,11 +85,11 @@ class TelegramBot(
             text.split(" ", "\n").filter { it.startsWith(START_MENTION_SYMBOL) }
                 .map { it.replace(Regex("[^A-Za-z0-9_@\n]"), "") }.flatMap {
                     userService.findAllUsersByChatIdAndGroupName(message.chatId.toString(), it)
-                }.toSet().mapNotNull {
-                    if (it.userId != null && it.name != null) {
-                        "[${it.name}](tg://user?id=${it.userId})"
+                }.toSet().mapNotNull { user ->
+                    if (user.userId != null && user.name != null) {
+                        "[${user.name}](tg://user?id=${user.userId})"
                     } else {
-                        it.login?.run { "@$this" }
+                        user.login?.run { "@${this.map { if (it.code in 1..125) "\\$it" else it }.joinToString("")}" }
                     }
                 }.joinToString(", ").takeIf { it.isNotEmpty() }
                 ?.let {

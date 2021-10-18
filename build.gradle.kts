@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.lezenford"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -36,8 +36,8 @@ dependencies {
 
     //DataBase
     implementation("org.liquibase:liquibase-core:4.5.0")
-    runtimeOnly("com.h2database:h2")
-    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.h2database:h2:1.4.200")
+    runtimeOnly("org.postgresql:postgresql:42.2.24.jre7")
 
     //Telegram
     implementation("org.telegram:telegrambots:5.3.0")
