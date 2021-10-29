@@ -85,7 +85,7 @@ class TelegramBot(
             text.split(" ", "\n").filter { it.startsWith(START_MENTION_SYMBOL) }
                 .map { it.replace(Regex("[^A-Za-z0-9_@\n]"), "") }.flatMap {
                     userService.findAllUsersByChatIdAndGroupName(message.chatId.toString(), it)
-                }.toSet().mapNotNull { user ->
+                }.toSet().filter { it.userId != message.from.id.toString() }.mapNotNull { user ->
                     if (user.userId != null && user.name != null) {
                         "[${user.name}](tg://user?id=${user.userId})"
                     } else {
