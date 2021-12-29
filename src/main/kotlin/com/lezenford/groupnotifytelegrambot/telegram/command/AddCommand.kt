@@ -25,10 +25,10 @@ class AddCommand(
     @Transactional
     @CacheEvict(CacheConfiguration.TELEGRAM_USER_CACHE, allEntries = true)
     override suspend fun execute(message: Message): BotApiMethod<*>? {
-        getGroup(message)?.also {
-            addToGroup(message.chat.id.toString(), it, getUsersInfo(message))
+        message.group?.also {
+            addToGroup(message.chat.id.toString(), it, message.usersInfo)
         }
-        return SendMessage(message.chatId.toString(), "Команда выполнена успешно")
+        return SendMessage(message.chatId.toString(), "Команда выполнена успешно").apply { disableNotification = true }
     }
 
     private suspend fun addToGroup(

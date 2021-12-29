@@ -7,20 +7,18 @@ import com.lezenford.groupnotifytelegrambot.extensions.removeMention
 import org.telegram.telegrambots.meta.api.objects.Message
 
 abstract class UserGroupCommand : BotCommand() {
-    protected fun getGroup(message: Message): String? {
-        return message.text.split(" ").getOrNull(1)?.let {
+    protected val Message.group: String?
+        get() = text.split(" ").getOrNull(1)?.let {
             if (it.startsWith(START_MENTION_SYMBOL)) {
                 it
             } else {
                 "$START_MENTION_SYMBOL$it"
             }
         }
-    }
 
-    protected fun getUsersInfo(message: Message): List<UserInfo> {
-        val groupName = getGroup(message)
-        return message.entities.filterNot {
-            it.type == MENTION && it.text != null && it.text == groupName
+    protected val Message.usersInfo: List<UserInfo>
+        get() = entities.filterNot {
+            it.type == MENTION && it.text != null && it.text == group
         }.mapNotNull {
             when (it.type) {
                 MENTION -> UserInfo(login = it.text)
@@ -32,7 +30,6 @@ abstract class UserGroupCommand : BotCommand() {
                 else -> null
             }
         }
-    }
 
     protected class UserInfo(
         val id: String? = null,

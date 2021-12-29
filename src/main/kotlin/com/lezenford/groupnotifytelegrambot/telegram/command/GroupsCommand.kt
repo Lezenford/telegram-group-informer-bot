@@ -17,8 +17,10 @@ class GroupsCommand(
     override suspend fun execute(message: Message): BotApiMethod<*>? {
         return groupRepository.findAllByChatId(message.chatId.toString()).takeIf { it.isNotEmpty() }
             ?.map { it.name }?.sorted()?.joinToString("\n")?.let {
-                SendMessage(message.chatId.toString(), "Список доступных групп:\n$it")
+                SendMessage(message.chatId.toString(), "Список доступных групп:\n$it").apply {
+                    disableNotification = true
+                }
             }
-            ?: SendMessage(message.chatId.toString(), "Нет активных групп")
+            ?: SendMessage(message.chatId.toString(), "Нет активных групп").apply { disableNotification = true }
     }
 }

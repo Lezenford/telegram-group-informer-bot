@@ -34,6 +34,7 @@ class GroupCommand(
             } else {
                 it.login
             }
-        }?.joinToString("\n")?.let { SendMessage(message.chatId.toString(), "Состав группы:\n$it") }
+        }?.joinToString("\n")
+            ?.let { SendMessage(message.chatId.toString(), "Состав группы:\n$it").apply { disableNotification = true } }
     }
 }
