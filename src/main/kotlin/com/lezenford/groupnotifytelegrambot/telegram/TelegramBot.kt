@@ -62,30 +62,29 @@ class TelegramBot(
         }.getOrNull()
     }
 
-    suspend fun <T : Serializable> sendMessage(message: BotApiMethod<T>): T? {
-        return kotlin.runCatching {
-            val result = webClient.post()
+    suspend fun <T : Serializable> sendMessage(message: BotApiMethod<T>): T? =
+        kotlin.runCatching {
+            webClient.post()
                 .uri("$url${message.method}")
                 .bodyValue(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .awaitBodyOrNull<String>()
-            kotlin.runCatching {
-                message.deserializeResponse(result)
-            }.onFailure {
-                log.error("Incorrect telegram api invoke: $result")
-            }.getOrThrow()
+                .awaitBodyOrNull<String>()?.let {
+                    message.deserializeResponse(it)
+                }
         }.onFailure {
-            log.error(it)
+            log.error("Telegram API error", it)
         }.getOrNull()
-    }
+
 
     private suspend fun prepareNotification(message: Message): SendMessage? {
-        return message.takeIf { it.text?.contains(START_MENTION_SYMBOL) ?: false }?.run {
-            text.split(" ", "\n").filter { it.startsWith(START_MENTION_SYMBOL) }
+        return message.takeIf {
+            (it.text ?: it.caption)?.contains(START_MENTION_SYMBOL) ?: false
+        }?.run {
+            (text ?: caption).split(" ", "\n").filter { it.startsWith(START_MENTION_SYMBOL) }
                 .map { it.replace(Regex("[^A-Za-z0-9_@\n]"), "") }.flatMap {
-                    userService.findAllUsersByChatIdAndGroupName(message.chatId.toString(), it)
-                }.toSet().filter { it.userId != message.from.id.toString() }.mapNotNull { user ->
+                    userService.findAllUsersByChatIdAndGroupName(chatId.toString(), it)
+                }.toSet().filter { it.userId != from.id.toString() }.mapNotNull { user ->
                     if (user.userId != null && user.name != null) {
                         "[${user.name}](tg://user?id=${user.userId})"
                     } else {
@@ -95,7 +94,7 @@ class TelegramBot(
                 ?.let {
                     SendMessage(chatId.toString(), it).apply {
                         parseMode = "MarkdownV2"
-                        replyToMessageId = message.messageId
+                        replyToMessageId = messageId
                     }
                 }
         }

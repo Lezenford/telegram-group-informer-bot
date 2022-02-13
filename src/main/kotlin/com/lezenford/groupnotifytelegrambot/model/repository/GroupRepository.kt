@@ -11,7 +11,7 @@ interface GroupRepository : JpaRepository<Group, Int> {
     @Query(
         """
             SELECT G FROM Group G
-            WHERE G.users.size > 0 AND G.chatId = :chatId
+            WHERE size(G.users) > 0 AND G.chatId = :chatId
         """
     )
     fun findAllByChatId(chatId: String): List<Group>

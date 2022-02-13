@@ -1,0 +1,58 @@
+package com.lezenford.groupnotifytelegrambot
+
+import com.lezenford.groupnotifytelegrambot.extensions.Logger
+import com.lezenford.groupnotifytelegrambot.model.entity.Group
+import com.lezenford.groupnotifytelegrambot.model.entity.TelegramUser
+import com.lezenford.groupnotifytelegrambot.model.repository.GroupRepository
+import com.lezenford.groupnotifytelegrambot.service.UserService
+import com.lezenford.groupnotifytelegrambot.telegram.TelegramBot
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.telegram.telegrambots.meta.api.objects.Chat
+import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.User
+import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
+
+
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+abstract class BaseTest {
+    @Autowired
+    protected lateinit var groupRepository: GroupRepository
+
+    @Autowired
+    protected lateinit var userService: UserService
+
+    @Autowired
+    protected lateinit var telegramBot: TelegramBot
+
+    protected val simpleMessage: Message
+        get() = Message().apply {
+            messageId = counter.incrementAndGet()
+            from = User().apply {
+                id = 123
+                firstName = "TestName"
+            }
+            date = Date().time.toInt()
+            chat = Chat().apply {
+                id = 123
+            }
+        }
+
+    protected fun createUser(): TelegramUser = TelegramUser(userId = null, login = null, name = null)
+    protected fun TelegramUser.withId() = copy(userId = counter.incrementAndGet().toString())
+    protected fun TelegramUser.withLogin() = copy(login = "test_login_${UUID.randomUUID().toString().replace("-", "")}")
+    protected fun TelegramUser.withName() = copy(name = "test_name_${UUID.randomUUID().toString().replace("-", "")}")
+
+    protected fun createGroup(chatId: Long = 123): Group = Group(
+        chatId = chatId.toString(),
+        name = "@test_group_${UUID.randomUUID().toString().replace("-", "")}"
+    )
+
+    companion object {
+        val counter = AtomicInteger()
+        private val log by Logger()
+    }
+}

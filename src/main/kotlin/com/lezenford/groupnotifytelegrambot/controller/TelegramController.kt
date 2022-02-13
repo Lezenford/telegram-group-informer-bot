@@ -1,5 +1,6 @@
 package com.lezenford.groupnotifytelegrambot.controller
 
+import com.lezenford.groupnotifytelegrambot.extensions.Logger
 import com.lezenford.groupnotifytelegrambot.telegram.TelegramBot
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,6 +18,14 @@ class TelegramController(
 
     @PostMapping(value = ["/\${telegram.token}"])
     suspend fun receive(@RequestBody update: Update): ResponseEntity<BotApiMethod<*>> {
-        return ResponseEntity.ok(telegramBot.receive(update))
+        return kotlin.runCatching {
+            telegramBot.receive(update)
+        }.onFailure {
+            log.error("Receive update error. Message: $update", it)
+        }.getOrNull().let { ResponseEntity.ok(it) }
+    }
+
+    companion object {
+        private val log by Logger()
     }
 }
