@@ -1,16 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.6.3"
+    id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
-    kotlin("plugin.jpa") version "1.6.10"
-    kotlin("kapt") version "1.6.10"
+    kotlin("jvm") version "1.6.21"
+    kotlin("plugin.spring") version "1.6.21"
+    kotlin("plugin.jpa") version "1.6.21"
+    kotlin("kapt") version "1.6.21"
 }
 
 group = "com.lezenford"
-version = "0.0.3"
+version = "0.0.4"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -40,8 +40,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql:42.2.24.jre7")
 
     //Telegram
-    implementation("org.telegram:telegrambots:5.3.0")
-    implementation("org.telegram:telegrambotsextensions:5.3.0")
+    implementation("org.telegram:telegrambots:6.0.1")
+    implementation("org.telegram:telegrambotsextensions:6.0.1")
 
     // cache
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")

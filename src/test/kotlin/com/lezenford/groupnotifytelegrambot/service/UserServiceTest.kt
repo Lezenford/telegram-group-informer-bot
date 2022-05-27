@@ -37,7 +37,7 @@ internal class UserServiceTest : BaseTest() {
         runBlocking {
             val telegramUser = createUser().withName()
             Assertions.assertThatExceptionOfType(IllegalArgumentException::class.java)
-                .isThrownBy { assertThat(userService.save(telegramUser)) }
+                .isThrownBy { assertThat(runBlocking { userService.save(telegramUser) }) }
         }
     }
 
@@ -46,7 +46,7 @@ internal class UserServiceTest : BaseTest() {
         runBlocking {
             val telegramUser = createUser().withId()
             Assertions.assertThatExceptionOfType(IllegalArgumentException::class.java)
-                .isThrownBy { assertThat(userService.save(telegramUser)) }
+                .isThrownBy { assertThat(runBlocking { userService.save(telegramUser) }) }
         }
     }
 

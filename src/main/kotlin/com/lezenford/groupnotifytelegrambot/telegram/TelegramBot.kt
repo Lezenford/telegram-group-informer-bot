@@ -8,6 +8,7 @@ import com.lezenford.groupnotifytelegrambot.service.UserService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.http.MediaType
@@ -106,7 +107,7 @@ class TelegramBot(
                 it.userId = message.from.id.toString()
                 it.name = message.from.firstName
                 it.login = message.from.userName?.removeMention()
-                userService.save(it)
+                withContext(Dispatchers.IO) { userService.save(it) }
             }
         }
     }
