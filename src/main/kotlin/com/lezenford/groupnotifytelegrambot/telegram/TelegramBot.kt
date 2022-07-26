@@ -3,6 +3,7 @@ package com.lezenford.groupnotifytelegrambot.telegram
 import com.lezenford.groupnotifytelegrambot.configuration.properties.TelegramProperties
 import com.lezenford.groupnotifytelegrambot.extensions.Logger
 import com.lezenford.groupnotifytelegrambot.extensions.START_MENTION_SYMBOL
+import com.lezenford.groupnotifytelegrambot.extensions.escape
 import com.lezenford.groupnotifytelegrambot.extensions.removeMention
 import com.lezenford.groupnotifytelegrambot.service.UserService
 import kotlinx.coroutines.CoroutineScope
@@ -87,9 +88,9 @@ class TelegramBot(
                     userService.findAllUsersByChatIdAndGroupName(chatId.toString(), it)
                 }.toSet().filter { it.userId != from.id.toString() }.mapNotNull { user ->
                     if (user.userId != null && user.name != null) {
-                        "[${user.name}](tg://user?id=${user.userId})"
+                        "[${user.name?.escape()}](tg://user?id=${user.userId})"
                     } else {
-                        user.login?.run { "@${this.map { if (it.code in 1..125) "\\$it" else it }.joinToString("")}" }
+                        user.login?.run { "@${this.escape()}" }
                     }
                 }.joinToString(", ").takeIf { it.isNotEmpty() }
                 ?.let {
